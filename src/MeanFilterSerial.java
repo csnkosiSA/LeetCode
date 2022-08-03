@@ -1,21 +1,40 @@
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 
 public class MeanFilterSerial{
 
     public static void main(String[] args){
+        
+
+
 
 
         /*
         *the following lines of codes is for 
         *reading the image
         */ 
+
+        Scanner input = new Scanner(System.in);
+        System.out.println("Please enter <inputImageName> <outputImageName> <windowWidth>");
+
+        String[] data =  input.nextLine().split(" ");
+
+        String inputImg = data[0];
+        String outputImg = data[1];
+        int widthq = Integer.parseInt(data[2]);
+
+
+        
         
         BufferedImage image  = null;
-        File f  = new File("data.jpg");
+        File f  = new File(inputImg);
         try {
 
             image = ImageIO.read(f);
@@ -29,30 +48,54 @@ public class MeanFilterSerial{
         int width =  image.getWidth();
         int height = image.getHeight();
 
+        ArrayList<Integer> a  =  new ArrayList<Integer>();
+        ArrayList<Integer> r  =  new ArrayList<Integer>();
+        ArrayList<Integer> g  =  new ArrayList<Integer>();
+        ArrayList<Integer> b  =  new ArrayList<Integer>();
         //f = new File("data/output.jpg");
-        for(int y = 0 ; y<  height; y++ ){
 
-            for(int x = 0; x<width; x++){
+        int counter = 0;
+        int p = 0;
+        for(int i = widthq-2 ; i<  width-1; i++ ){
+            
+            for(int j = 9; j<height-1; j++){
 
-                int p = image.getRGB(x, y);
-                int a = (p>>24)&0xff;
-                int r = (p>>16)&0xff;
-                int g = (p>>8)&0xff;
-                int b = p&0xff;
+               for(int ki = 0; ki<widthq;ki++){
+                   
+                   for(int kj = 0; kj<widthq;kj++){
 
-                int avg = (r+g+b)/3;
+                        p = image.getRGB(i+ ki -(widthq-2), j+ kj-(widthq-2) );
+                        a.add((p>>24)&0xff);
+                        r.add((p>>16)&0xff);
+                        g.add((p>>8)&0xff);     
+                        b.add(p&0xff);
+                       // System.out.println(r.get(counter));
+                        counter++;
+                   }  
+                        
+               }
+               counter = 0;
+               
+               Collections.sort(r);
+               Collections.sort(g);
+               Collections.sort(b);
+               int dar  = (widthq*widthq)/2;
 
-                //replace RGB value with avg
-                p = (a<<24) | (avg<<16) | (avg<<8) | avg;
+               p = (a.get(dar)<<24) | (r.get(dar)<<16) | (g.get(dar)<<8) | b.get(dar);
+               image.setRGB(i-(widthq-2), j-(widthq-2), p);
 
-                image.setRGB(x, y, p);
-
+               a.clear();
+               r.clear();
+               g.clear();
+               b.clear();
+             
+               
             }
 
         }
         //get pixel value
 
-        f = new File("Output.jpg");
+        f = new File(outputImg);
         try {
             ImageIO.write(image, "jpg", f);
         } catch (IOException e) {
