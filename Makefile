@@ -12,7 +12,8 @@ $(BINDIR)/%.class: $(SRCDIR)/%.java
 	
 	$(JAVAC) -d $(BINDIR)/ -cp $(BINDIR) $<
 	
-classes:bin/MeanFilterSerial.class\
+classes:bin/MedianFilterSerial.class\
+		bin/MeanFilterSerial.class\
 
 
 default: $(CLASSES)
@@ -20,12 +21,17 @@ default: $(CLASSES)
 
 
 run: $(CLASSES)
-	 $(JAVA) -cp $(BINDIR) MeanFilterSerial
+	 $(JAVA) -cp $(BINDIR) MedianFilterSerial 
+run_2: $(CLASSES)
+	 $(JAVA) -cp $(BINDIR) MeanFilterSerial 
 	
 run_javadoc:
 	javadoc -d javadoc src/*.java	
 clean: 
 	rm $(BINDIR)/*class  
+
+clean_images:
+	rm *.jpg
 	
 
 
